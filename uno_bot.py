@@ -52,14 +52,13 @@ def savage_win_message():
     print("You just UNO-REKT your opponent. Better luck next time, loser 😎🔥")
     print("Game Over.\n")
 
-def uno_game(simulated_inputs=None):
+def uno_game():
     deck = create_deck()
     player_hand = [deck.pop() for _ in range(7)]
     bot_hand = [deck.pop() for _ in range(7)]
     discard_pile = [deck.pop()]
 
     turn = 0
-    input_index = 0
 
     while True:
         print(f"\nTop Card on Discard Pile:\n" + "\n".join(draw_card(discard_pile[-1])) + "\n")
@@ -73,11 +72,9 @@ def uno_game(simulated_inputs=None):
                 for i, card in enumerate(playable):
                     print(f"{i + 1}: {card}")
 
-                if simulated_inputs is not None and input_index < len(simulated_inputs):
-                    choice = simulated_inputs[input_index]
-                    input_index += 1
-                    print(f"Simulated input: {choice}")
-                else:
+                try:
+                    choice = int(input("Choose card number to play or 0 to draw: "))
+                except ValueError:
                     choice = 0
 
                 if choice == 0:
@@ -129,5 +126,4 @@ def uno_game(simulated_inputs=None):
             turn = 0
 
 if __name__ == "__main__":
-    simulated_moves = [1, 0, 2, 0, 1, 0, 3]
-    uno_game(simulated_moves)
+    uno_game()
