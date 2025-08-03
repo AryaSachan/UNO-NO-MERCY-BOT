@@ -4,101 +4,130 @@ colors = ['Red', 'Green', 'Blue', 'Yellow']
 values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', '+2']
 wilds = ['Wild', 'Wild +4']
 
-
 def draw_card(card):
     color, value = card
-    card_lines = [
-        " --------- ",
-        f"|{color[0]:<9}|",
-        "|         |",
-        f"|   {value:<5}|",
-        "|         |",
-        f"|{color[0]:>9}|",
-        " --------- "
-    ]
-    return "\n".join(card_lines)
+    if color == 'Wild':
+        card_lines = [
+            " --------- ",
+            f"|{'WILD':^9}|",
+            "|         |",
+            f"|{value:^9}|",
+            "|         |",
+            f"|{'WILD':^9}|",
+            " --------- "
+        ]
+    else:
+        card_lines = [
+            " --------- ",
+            f"|{color[0]:<9}|",
+            "|         |",
+            f"|{value:^9}|",
+            "|         |",
+            f"|{color[0]:>9}|",
+            " --------- "
+        ]
+    return card_lines
 
 def create_deck():
-    deck = []
-    for color in colors:
-        for value in values:
-            deck.append((color, value))
-            if value != '0':  
-                deck.append((color, value))
-    for _ in range(4):
-        for wild in wilds:
-            deck.append(('Wild', wild))
+    deck = [(color, value) for color in colors for value in values]
+    deck += [(color, value) for color in colors for value in values if value != '0']
+    deck += [('Wild', wild) for wild in wilds for _ in range(4)]
     random.shuffle(deck)
     return deck
 
 def show_hand(hand):
-    for idx, card in enumerate(hand):
-        print(f"Card {idx + 1}:")
-        print(draw_card(card))
-        print()
+    all_lines = ['' for _ in range(7)]
+    for card in hand:
+        card_lines = draw_card(card)
+        for i in range(7):
+            all_lines[i] += card_lines[i] + '  '
+    for line in all_lines:
+        print(line)
 
 def valid_play(card, top_card):
     return card[0] == top_card[0] or card[1] == top_card[1] or card[0] == 'Wild'
 
 def savage_win_message():
     print("\n💀💀💀 Savage Mode Activated 💀💀💀")
-    print("You just UNO-REKT your opponent. Better luck next time, LOSER ! 😎🔥")
+    print("You just UNO-REKT your opponent. Better luck next time, loser 😎🔥")
     print("Game Over.\n")
 
-def uno_game():
+def uno_game(simulated_inputs=None):
     deck = create_deck()
     player_hand = [deck.pop() for _ in range(7)]
     bot_hand = [deck.pop() for _ in range(7)]
     discard_pile = [deck.pop()]
 
-    turn = 0  
+    turn = 0
+    input_index = 0
 
     while True:
-        print(f"\nTop Card on Discard Pile:\n{draw_card(discard_pile[-1])}\n")
+        print(f"\nTop Card on Discard Pile:\n" + "\n".join(draw_card(discard_pile[-1])) + "\n")
 
         if turn == 0:
-            print("🔥 Your Turn 🔥")
+            print("Your Turn 🔥")
             show_hand(player_hand)
             playable = [card for card in player_hand if valid_play(card, discard_pile[-1])]
             if playable:
                 print("Playable Cards:")
                 for i, card in enumerate(playable):
                     print(f"{i + 1}: {card}")
-                choice = int(input("Choose card number to play or 0 to draw: "))
-                if choice == 0:
-                    drawn = deck.pop()
-                    player_hand.append(drawn)
-                    print("\nYou drew:")
-                    print(draw_card(drawn))
+
+                if simulated_inputs is not None and input_index < len(simulated_inputs):
+                    choice = simulated_inputs[input_index]
+                    input_index += 1
+                    print(f"Simulated input: {choice}")
                 else:
+                    choice = 0
+
+                if choice == 0:
+                    if deck:
+                        drawn = deck.pop()
+                        player_hand.append(drawn)
+                        print("\nYou drew:")
+                        print("\n".join(draw_card(drawn)))
+                    else:
+                        print("Deck is empty. No card drawn.")
+                elif 1 <= choice <= len(playable):
                     selected = playable[choice - 1]
                     player_hand.remove(selected)
                     discard_pile.append(selected)
+                else:
+                    print("Invalid choice. You lose your turn.")
             else:
-                print("No valid moves. You draw a card.")
-                player_hand.append(deck.pop())
+                if deck:
+                    print("No valid moves. You draw a card.")
+                    player_hand.append(deck.pop())
+                else:
+                    print("No valid moves and deck is empty.")
+
             if not player_hand:
                 savage_win_message()
                 break
             turn = 1
+
         else:
-            print("🤖 Bot's Turn 🤖")
+            print("Bot's Turn 🤖")
             bot_played = False
             for card in bot_hand:
                 if valid_play(card, discard_pile[-1]):
-                    print(f"Bot played:\n{draw_card(card)}")
+                    print(f"Bot played:\n" + "\n".join(draw_card(card)))
                     bot_hand.remove(card)
                     discard_pile.append(card)
                     bot_played = True
                     break
             if not bot_played:
-                print("Bot had no valid moves and drew a card.")
-                bot_hand.append(deck.pop())
+                if deck:
+                    print("Bot had no valid moves and drew a card.")
+                    bot_hand.append(deck.pop())
+                else:
+                    print("Bot had no valid moves and the deck is empty.")
+
             if not bot_hand:
                 print("\nBot Won! You got schooled by AI 🤖💀\n")
                 break
             turn = 0
 
 if __name__ == "__main__":
-    uno_game()
-
+    simulated_moves = [1, 0, 2, 0, 1, 0, 3]
+    uno_game(simulated_moves)
