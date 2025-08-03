@@ -42,7 +42,7 @@ def valid_play(card, top_card):
 
 def savage_win_message():
     print("\n💀💀💀 Savage Mode Activated 💀💀💀")
-    print("You just UNO-REKT your opponent. Better luck next time, loser 😎🔥")
+    print("You just UNO-REKT your opponent. Better luck next time, LOSER ! 😎🔥")
     print("Game Over.\n")
 
 def uno_game():
@@ -57,7 +57,7 @@ def uno_game():
         print(f"\nTop Card on Discard Pile:\n{draw_card(discard_pile[-1])}\n")
 
         if turn == 0:
-            print("Your Turn 🔥")
+            print("🔥 Your Turn 🔥")
             show_hand(player_hand)
             playable = [card for card in player_hand if valid_play(card, discard_pile[-1])]
             if playable:
@@ -82,7 +82,7 @@ def uno_game():
                 break
             turn = 1
         else:
-            print("Bot's Turn 🤖")
+            print("🤖 Bot's Turn 🤖")
             bot_played = False
             for card in bot_hand:
                 if valid_play(card, discard_pile[-1]):
@@ -101,3 +101,4 @@ def uno_game():
 
 if __name__ == "__main__":
     uno_game()
+
