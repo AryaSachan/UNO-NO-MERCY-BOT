@@ -1,5 +1,5 @@
 # UNO-NO-MERCY-BOT
-This bot is pure VENGEANCE, reminds me of my teacher. 
+This bot is pure VENGEANCE. 
 🃏 UNO No Mercy Bot
 A Python-powered, ruthless UNO-playing AI that shows no mercy — built to dominate.
 
